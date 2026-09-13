@@ -1,0 +1,1644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Swift Deal Analyzer™ | Investor Underwriting System</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='b' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2300B7FF'/%3E%3Cstop offset='0.55' stop-color='%23005CFF'/%3E%3Cstop offset='1' stop-color='%23001F7A'/%3E%3C/linearGradient%3E%3ClinearGradient id='r' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23FF4A3D'/%3E%3Cstop offset='1' stop-color='%23B00000'/%3E%3C/linearGradient%3E%3Cfilter id='g'%3E%3CfeGaussianBlur stdDeviation='1.5' result='c'/%3E%3CfeMerge%3E%3CfeMergeNode in='c'/%3E%3CfeMergeNode in='SourceGraphic'/%3E%3C/feMerge%3E%3C/filter%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%23050B14'/%3E%3Cpath d='M48 13C42 8 30 8 22 13c-8 5-9 14-2 19 5 3 14 3 18 6 3 2 2 5-2 7-5 2-11 1-16-2l-4 8c8 5 20 6 29 1 9-5 10-15 3-20-5-4-13-4-18-7-3-2-2-5 1-6 5-2 10-1 14 2z' fill='url(%23b)' stroke='%237EDBFF' stroke-width='1.5' filter='url(%23g)'/%3E%3Cpath d='M44 45l13 13M57 45L44 58' stroke='url(%23r)' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+
+<style>
+body{
+background:#2A3439;
+color:white;
+font-family:Segoe UI,sans-serif;
+padding:20px;
+}
+
+h1,h2,h3{
+color:#00BCD4;
+text-align:center;
+}
+
+.container{
+display:flex;
+flex-wrap:wrap;
+gap:20px;
+justify-content:center;
+max-width:1200px;
+margin:auto;
+}
+
+.card{
+background:#1F262B;
+padding:25px;
+border-radius:15px;
+width:100%;
+max-width:420px;
+box-shadow:0 8px 16px rgba(0,0,0,.4);
+}
+
+label{
+display:block;
+margin-bottom:6px;
+font-size:14px;
+}
+
+input, select {
+width:100%;
+padding:12px;
+border-radius:8px;
+border:2px solid #37474F;
+background:#37474F;
+color:white;
+font-size:16px;
+margin-bottom:16px;
+box-sizing: border-box;
+outline: none;
+}
+
+input[readonly]{
+background:#263238;
+font-weight:bold;
+}
+
+.highlight input{
+background:#00695C;
+font-size:18px;
+}
+
+.btn-group{
+display:flex;
+gap:10px;
+margin:15px 0;
+flex-wrap:wrap;
+}
+
+button{
+flex:1;
+padding:10px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.percent-btn{
+background:#37474F;
+color:white;
+}
+
+.percent-btn.active{
+background:#00BCD4;
+color:black;
+}
+
+.secondary{
+background:#37474F;
+color:white;
+}
+
+.primary{
+background:#00BCD4;
+color:black;
+}
+
+.breakdown{
+background:#37474F;
+padding:12px;
+border-radius:8px;
+display:flex;
+justify-content:space-between;
+margin-bottom:10px;
+border-left:4px solid #00BCD4;
+}
+
+.negative{
+border-left-color:#FF5252;
+}
+
+.total{
+background:#00695C;
+font-weight:bold;
+}
+
+.kill-alert {
+background:#7F1D1D;
+border:2px solid #FF5252;
+color:#FFD2D2;
+padding:12px;
+border-radius:8px;
+font-weight:bold;
+text-align:center;
+margin-bottom:16px;
+display:none;
+}
+
+/* VIEW TOGGLE STYLING */
+.view-toggle-container {
+display:flex;
+justify-content:center;
+margin-bottom:25px;
+}
+
+.toggle-wrapper {
+background:#1F262B;
+padding:6px;
+border-radius:10px;
+display:inline-flex;
+gap:5px;
+box-shadow:0 4px 10px rgba(0,0,0,.3);
+border:1px solid #37474F;
+}
+
+.toggle-btn {
+padding:10px 24px;
+border-radius:6px;
+font-size:14px;
+text-transform:uppercase;
+letter-spacing:0.5px;
+transition: all 0.2s;
+cursor: pointer;
+border: none;
+}
+
+.toggle-btn.active {
+background:#00BCD4;
+color:black;
+}
+
+.toggle-btn:not(.active) {
+background:transparent;
+color:white;
+opacity:0.6;
+}
+
+.toggle-btn:not(.active):hover {
+opacity:1;
+background:rgba(255,255,255,0.05);
+}
+
+/* HIDDEN UTILITY CLASS */
+.view-hidden {
+display:none !important;
+}
+
+/* ============ REPAIR ESTIMATOR MODULE ============ */
+.re-subtoggle{
+display:flex;
+justify-content:center;
+gap:5px;
+margin-bottom:20px;
+flex-wrap:wrap;
+}
+.re-subtoggle button{
+flex:none;
+padding:8px 18px;
+border-radius:6px;
+font-size:12.5px;
+text-transform:uppercase;
+letter-spacing:0.5px;
+background:transparent;
+color:white;
+opacity:.6;
+border:1px solid #37474F;
+}
+.re-subtoggle button.active{
+background:#00BCD4;
+color:black;
+opacity:1;
+border-color:#00BCD4;
+}
+.re-card-wide{
+max-width:900px;
+}
+.re-cat-list{
+max-height:520px;
+overflow-y:auto;
+padding-right:4px;
+}
+.re-cat-row{
+background:#37474F;
+border-radius:8px;
+padding:12px 14px;
+margin-bottom:8px;
+border-left:4px solid transparent;
+}
+.re-cat-row.on{
+border-left-color:#00BCD4;
+}
+.re-cat-top{
+display:flex;
+align-items:center;
+gap:10px;
+}
+.re-cat-top input[type=checkbox]{
+width:18px;height:18px;flex-shrink:0;
+accent-color:#00BCD4;
+margin:0;
+}
+.re-cat-top .re-name{
+flex:1;
+font-weight:bold;
+font-size:14px;
+}
+.re-cat-top .re-cost{
+font-weight:bold;
+color:#00BCD4;
+}
+.re-cat-detail{
+display:none;
+margin-top:10px;
+padding-top:10px;
+border-top:1px dashed #2A3439;
+}
+.re-cat-row.on .re-cat-detail{display:block;}
+.re-cat-detail .re-row2{
+display:flex;
+gap:10px;
+}
+.re-cat-detail .re-row2>div{flex:1;}
+.re-cat-detail label{font-size:12px;margin-bottom:4px;opacity:.8;}
+.re-cat-detail select,.re-cat-detail input{margin-bottom:8px;padding:9px;font-size:14px;}
+.re-unit-note{font-size:11.5px;opacity:.65;margin-top:-4px;margin-bottom:6px;}
+.re-nodata{font-size:12px;color:#FF8A80;font-weight:bold;margin:4px 0 8px;}
+.re-override-badge{
+font-size:10px;font-weight:bold;color:#1F262B;background:#00BCD4;
+padding:2px 7px;border-radius:5px;margin-left:6px;
+}
+.re-pillrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.re-pill{
+padding:8px 16px;border-radius:20px;border:1px solid #37474F;background:#37474F;
+color:white;font-weight:bold;font-size:13px;cursor:pointer;flex:none;
+}
+.re-pill.active{background:#00BCD4;color:black;border-color:#00BCD4;}
+input.re-custom-pct{width:70px !important;display:inline-block;margin-bottom:0;padding:8px !important;}
+.re-warning{
+background:#7F1D1D;
+border:1px solid #FF5252;
+color:#FFD2D2;
+padding:12px;border-radius:8px;font-size:12px;margin:14px 0;line-height:1.5;
+}
+table.re-table{width:100%;border-collapse:collapse;font-size:12.5px;margin:10px 0;}
+table.re-table th{text-align:left;font-size:10.5px;opacity:.6;padding:6px 4px;border-bottom:1px solid #37474F;}
+table.re-table td{padding:8px 4px;border-bottom:1px solid #2A3439;}
+table.re-table td.re-num{text-align:right;font-weight:bold;}
+.re-saved-card{background:#37474F;border-radius:8px;padding:14px;margin-bottom:10px;}
+.re-saved-top{display:flex;justify-content:space-between;align-items:flex-start;}
+.re-saved-addr{font-weight:bold;}
+.re-saved-total{color:#00BCD4;font-weight:bold;}
+.re-saved-meta{font-size:11px;opacity:.6;margin-top:4px;}
+.re-empty{text-align:center;padding:40px 10px;opacity:.6;}
+.re-admin-note{font-size:12px;opacity:.7;margin-bottom:14px;line-height:1.5;}
+.re-price-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:8px 0;}
+.re-price-grid label{font-size:11px;opacity:.8;margin-bottom:3px;}
+.re-toast{
+position:fixed;top:14px;left:50%;transform:translateX(-50%);
+background:#00695C;color:white;padding:10px 18px;border-radius:8px;
+font-size:13px;font-weight:bold;z-index:200;opacity:0;pointer-events:none;
+transition:opacity .2s;
+}
+.re-toast.show{opacity:1;}
+.re-section-title{
+font-weight:bold;color:#00BCD4;margin:20px 0 10px;font-size:15px;text-align:left;
+}
+.re-section-title:first-child{margin-top:0;}
+.re-grid3{display:flex;gap:10px;}
+.re-grid3>div{flex:1;}
+textarea.re-csv{
+width:100%;padding:10px;border-radius:8px;border:2px solid #37474F;
+background:#37474F;color:white;font-size:13px;box-sizing:border-box;margin-bottom:10px;
+font-family:Segoe UI,sans-serif;
+}
+
+/* V22 repair workspace layout */
+.re-main-grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(310px,.85fr);gap:18px;align-items:start}
+.re-repair-panel{min-width:0}
+.re-summary-panel{position:sticky;top:16px;align-self:start;background:rgba(16,26,32,.96);border:1px solid var(--line,#263640);border-radius:14px;padding:14px;box-shadow:0 14px 35px rgba(0,0,0,.24);z-index:5}
+.re-summary-panel .re-section-title{margin-top:0}
+.re-cat-list{max-height:none;overflow:visible;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding-right:0}
+.re-cat-row{margin-bottom:0;padding:16px 18px;min-width:0}
+.re-cat-top{gap:10px;min-height:34px}
+.re-cat-top .re-name{font-size:13px;line-height:1.25;letter-spacing:.4px;text-transform:uppercase}
+.re-cat-top .re-cost{font-size:14px;white-space:nowrap}
+.re-cat-detail{margin-top:12px;padding-top:12px}
+.re-cat-detail .re-row2{gap:10px}
+.re-cat-detail label{font-size:11.5px}
+.re-cat-detail select,.re-cat-detail input{margin-bottom:8px;padding:9px;font-size:14px}
+.re-unit-note{font-size:11px}
+.re-summary-panel .breakdown{padding:10px;margin-bottom:7px;font-size:12px}
+.re-summary-panel table.re-table{font-size:11px}
+.re-summary-panel .btn-group{margin:10px 0 0}
+@media(max-width:1050px){.re-main-grid{grid-template-columns:1fr}.re-summary-panel{position:relative;top:auto}}
+@media(max-width:480px){.re-cat-list{grid-template-columns:1fr}}
+
+/* V21 professional dashboard layer */
+:root{--bg:#0b1115;--panel:#121a20;--panel2:#18232a;--line:#263640;--accent:#16d6e8;--muted:#91a2ad;--good:#27d17f;--warn:#ffc857;--bad:#ff5b6e}
+body{background:radial-gradient(circle at top,#17252d 0,#0b1115 48%);min-height:100vh;padding:24px;color:#eef7fa}
+.app-header{max-width:1250px;margin:0 auto 22px;display:flex;justify-content:space-between;align-items:center;background:rgba(18,26,32,.9);border:1px solid var(--line);border-radius:18px;padding:22px 26px;box-shadow:0 15px 40px rgba(0,0,0,.25)}
+.app-header h1{margin:4px 0;color:#fff;text-align:left;font-size:30px}.app-header p{margin:0;color:var(--muted);font-size:13px}.brand{font-weight:900;letter-spacing:2px;font-size:12px;color:var(--accent)}.brand span{color:#fff}.header-badge{padding:8px 12px;border:1px solid #2e5961;border-radius:999px;color:var(--accent);font-size:11px;font-weight:800}
+.container{max-width:1250px}.card{background:linear-gradient(180deg,#141e24,#10171c);border:1px solid var(--line);box-shadow:0 18px 45px rgba(0,0,0,.28);border-radius:18px}.card h2,.card h3{color:#fff}.card h2{font-size:20px}.card h3{font-size:16px}
+label{color:#b9c8cf;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.3px}input,select,textarea.re-csv{background:#0d151a;border-color:#293b45;color:#fff}input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(22,214,232,.1)}
+.toggle-wrapper{background:#10181d;border-color:#293b45;border-radius:12px}.toggle-btn{padding:11px 18px}.primary,.percent-btn.active,.toggle-btn.active,.re-pill.active,.re-subtoggle button.active{background:var(--accent);color:#041014}.secondary,.percent-btn,.re-pill{background:#1b2931;color:#dce8ec}.breakdown{background:#17232a;border-left-color:#34525e}.total{background:linear-gradient(90deg,#073e43,#07545a);border-left-color:var(--accent)}.negative{border-left-color:var(--bad)}
+.highlight{background:linear-gradient(135deg,#063d43,#08666d);padding:14px;border-radius:12px;border:1px solid #16737a}.highlight input{background:transparent;font-size:25px;border:0;margin:0;color:#fff}
+.deal-verdict{margin:0 0 16px;padding:18px;border-radius:14px;border:1px solid var(--line);background:#101a20}.verdict-title{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}.verdict-main{font-size:25px;font-weight:900;margin-top:5px}.verdict-sub{font-size:12px;color:var(--muted);margin-top:5px}.good{color:var(--good)}.warn{color:var(--warn)}.bad{color:var(--bad)}
+@media(max-width:700px){body{padding:12px}.app-header{padding:18px;align-items:flex-start}.app-header h1{font-size:23px}.header-badge{display:none}.toggle-wrapper{width:100%;overflow:auto}.toggle-btn{white-space:nowrap}.card{padding:18px}.re-grid3{flex-direction:column;gap:0}}
+</style>
+<style>
+.deal-verdict{margin-top:16px;padding:16px;border-radius:12px;background:#263238;border:2px solid #37474F;text-align:center}
+.verdict-title{font-size:12px;letter-spacing:1.5px;font-weight:800;opacity:.7;margin-bottom:6px}
+#verdictText{font-size:20px;font-weight:900;margin-bottom:12px}
+.verdict-row{display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid #37474F;font-size:13px}
+.deal-works{border-color:#22c55e;background:rgba(34,197,94,.10)}
+.deal-works #verdictText{color:#22c55e}
+.deal-negotiate{border-color:#f59e0b;background:rgba(245,158,11,.10)}
+.deal-negotiate #verdictText{color:#f59e0b}
+.deal-fails{border-color:#ef4444;background:rgba(239,68,68,.10)}
+.deal-fails #verdictText{color:#ef4444}
+
+/* ============ ARV FINDER MODAL ============ */
+.arv-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:500;align-items:center;justify-content:center;padding:20px;}
+.arv-modal-overlay.show{display:flex;}
+.arv-modal-card{background:linear-gradient(180deg,#141e24,#10171c);border:1px solid var(--line,#263640);border-radius:18px;padding:26px;max-width:440px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+.arv-modal-card h2{color:#fff;text-align:left;}
+.arv-address-note{font-size:12px;color:var(--muted,#91a2ad);margin:0 0 16px;}
+.arv-estimated-box{background:linear-gradient(135deg,#063d43,#08666d);border:1px solid #16737a;border-radius:12px;padding:16px;text-align:center;margin:6px 0 8px;}
+.arv-estimated-box .arv-label{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#b9e9ec;opacity:.85;}
+.arv-estimated-box .arv-value{font-size:28px;font-weight:900;color:#fff;margin-top:4px;}
+.arv-sync-note{font-size:11px;color:var(--muted,#91a2ad);text-align:center;margin-bottom:6px;}
+</style></head>
+
+<body>
+
+<header class="app-header"><div><div class="brand">SWIFT <span>EQUITY SOLUTIONS</span></div><h1>Swift Deal Analyzer™</h1><p>Investor Underwriting & Deal Analysis System</p></div><div class="header-badge">PRO • V22</div></header>
+
+<div class="view-toggle-container">
+<div class="toggle-wrapper">
+<button class="toggle-btn active" id="btnWholesale" onclick="switchView('wholesale')">Wholesale Flip</button>
+<button class="toggle-btn" id="btnRental" onclick="switchView('rental')">Rental Property</button>
+<button class="toggle-btn" id="btnCreative" onclick="switchView('creative')">Creative Finance</button>
+<button class="toggle-btn" id="btnRepair" onclick="switchView('repair')">Repair Estimator</button>
+</div>
+</div>
+
+<div class="arv-modal-overlay" id="arvModalOverlay" onclick="if(event.target===this) closeARV()">
+<div class="arv-modal-card">
+<h2 style="margin-bottom:2px;">ARV Finder</h2>
+<div class="arv-address-note" id="arvAddressNote">No property address set</div>
+
+<label>Zillow Estimate (Zestimate)</label>
+<input id="arvZillow" placeholder="$0" oninput="formatCurrencyARV(this)">
+
+<label>Redfin Estimate</label>
+<input id="arvRedfin" placeholder="$0" oninput="formatCurrencyARV(this)">
+
+<label>Realtor.com Estimate</label>
+<input id="arvRealtor" placeholder="$0" oninput="formatCurrencyARV(this)">
+
+<label>Other Estimate</label>
+<input id="arvOther" placeholder="$0" oninput="formatCurrencyARV(this)">
+
+<div class="arv-estimated-box">
+<div class="arv-label">Estimated ARV</div>
+<div class="arv-value" id="arvEstimatedValue">$0</div>
+</div>
+<div class="arv-sync-note" id="arvSyncNote">Enter at least one estimate and click Calculate ARV.</div>
+
+<div class="btn-group">
+<button class="secondary" onclick="closeARV()">Close</button>
+<button class="primary" onclick="calculateARVFinder()">Calculate ARV</button>
+</div>
+</div>
+</div>
+
+<div class="container">
+
+<div class="card mode-wholesale">
+<h2>Deal Calculator</h2>
+
+<label>Property Address</label>
+<input id="address" placeholder="123 Main St Dallas TX">
+
+<div style="font-size:12px;opacity:.7;margin-top:-8px;margin-bottom:10px;">💡 Address and square footage automatically carry into the Repair Estimator.</div>
+
+<div class="btn-group">
+<button class="secondary" onclick="openMap()">Map</button>
+<button class="secondary" onclick="openARV()">ARV Finder</button>
+<button class="secondary" onclick="openComps()">Find Comps</button>
+</div>
+
+<div style="display: flex; gap: 10px;">
+<div style="flex: 1;">
+<label>Property Type</label>
+<select id="propType" onchange="calculate()">
+<option value="SFH">Single Family</option>
+<option value="MFH">Multi-Family</option>
+</select>
+</div>
+<div style="flex: 1;">
+<label>Bedrooms</label>
+<input type="number" id="beds" value="3" oninput="calculate()">
+</div>
+</div>
+
+<div id="killBox" class="kill-alert">
+⚠️ 2-BR Single Family: Deal Killed
+</div>
+
+<label>Offer Rule</label>
+
+<div class="btn-group">
+<button class="percent-btn active" onclick="setPercent(0.6,this)">60%</button>
+<button class="percent-btn" onclick="setPercent(0.65,this)">65%</button>
+<button class="percent-btn" onclick="setPercent(0.7,this)">70%</button>
+<button class="percent-btn" onclick="setPercent(0.8,this)">80%</button>
+</div>
+
+<label>Seller Asking Price</label>
+<input id="askingPrice" placeholder="$0" oninput="formatCurrency(this)" style="border-color:#00BCD4;">
+
+<label>ARV</label>
+<input id="arv" oninput="formatCurrency(this)">
+
+<label>AS-IS Value (<span id="percentLabel">60%</span>)</label>
+<input id="asis" readonly>
+
+<label>Square Footage</label>
+<input id="sqft" oninput="estimateRepair()">
+
+<label>Repair Estimate</label>
+<input id="repair" oninput="formatCurrency(this)">
+
+<label>Wholesale Fee %</label>
+<input id="wholesale" oninput="calculate()">
+
+<label>Wholesale Fee $</label>
+<input id="wholesaleAmount" readonly>
+
+<label>Buyer Margin Buffer</label>
+<select id="buyerBuffer" onchange="calculate()">
+<option value="0.15">15% (Institutional)</option>
+<option value="0.12">12% (Aggressive)</option>
+<option value="0.10">10% (Standard)</option>
+<option value="0">0% (None)</option>
+</select>
+
+<div class="highlight">
+<label>Maximum Offer</label>
+<input id="total" readonly>
+</div>
+
+<div class="btn-group">
+<button class="secondary" onclick="resetForm()">Reset</button>
+<button class="primary" onclick="generateOffer()">Copy Investor Offer</button>
+</div>
+</div>
+
+<div class="card mode-wholesale">
+<div id="dealVerdict" class="deal-verdict"><div class="verdict-title">Deal Verdict</div><div id="verdictMain" class="verdict-main warn">ENTER PROPERTY DATA</div><div id="verdictSub" class="verdict-sub">Enter ARV and repairs to underwrite the deal.</div></div>
+<h3>Deal Breakdown</h3>
+
+<div class="breakdown"><span>ARV</span><span id="b-arv">$0</span></div>
+<div class="breakdown"><span>AS-IS</span><span id="b-asis">$0</span></div>
+<div class="breakdown negative"><span>Repairs</span><span id="b-repair">$0</span></div>
+<div class="breakdown negative"><span>Wholesale Fee</span><span id="b-wholesale">$0</span></div>
+<div class="breakdown negative"><span>Buyer Buffer</span><span id="b-buffer">$0</span></div>
+<div class="breakdown total"><span>Offer / MAO</span><span id="b-total">$0</span></div>
+
+<div id="askingVerdict" class="deal-verdict">
+  <div class="verdict-title">DEAL CHECK</div>
+  <div id="verdictText">Enter the seller asking price to see if the deal works.</div>
+  <div class="verdict-row"><span>Seller Asking</span><strong id="v-asking">$0</strong></div>
+  <div class="verdict-row"><span>Max Offer</span><strong id="v-mao">$0</strong></div>
+  <div class="verdict-row"><span>Difference</span><strong id="v-diff">$0</strong></div>
+</div>
+
+<h3>Investor Metrics</h3>
+
+<div class="breakdown"><span>Cash Buyer Price</span><span id="buyerPrice">$0</span></div>
+<div class="breakdown"><span>Flip Holding Cost</span><span id="flipCost">$0</span></div>
+<div class="breakdown"><span>Flip Profit</span><span id="flipProfit">$0</span></div>
+<div class="breakdown"><span>Assignment Spread</span><span id="spread">$0</span></div>
+<div class="breakdown total"><span>Wholesale Profit</span><span id="profitLevel">-</span></div>
+<div class="breakdown total"><span>Deal Score</span><span id="dealScore">-</span></div>
+</div>
+
+
+<div class="card mode-rental view-hidden">
+<h2>Rental Property Inputs</h2>
+
+<label>Monthly Gross Rent</label>
+<input id="rentMonthly" placeholder="$0" oninput="formatCurrencyRental(this)">
+
+<label>Purchase Price (or Max Offer)</label>
+<input id="rentPurchase" placeholder="$0" oninput="formatCurrencyRental(this)">
+
+<label>Down Payment ($)</label>
+<input id="rentDown" placeholder="$0" oninput="formatCurrencyRental(this)">
+
+<label>Estimated Monthly Mortgage (P&I)</label>
+<input id="rentMortgage" placeholder="$0" oninput="formatCurrencyRental(this)">
+
+<label>Monthly Expenses (Taxes, Ins, Vacancy, Maint)</label>
+<input id="rentExpenses" placeholder="$0" oninput="formatCurrencyRental(this)">
+
+<div class="btn-group">
+<button class="secondary" onclick="resetForm()">Reset Workspace</button>
+</div>
+</div>
+
+<div class="card mode-rental view-hidden">
+<h3>Rental Performance Metrics</h3>
+<div class="breakdown"><span>Monthly Gross Revenue</span><span id="r-gross">$0</span></div>
+<div class="breakdown negative"><span>− Monthly Mortgage (P&I)</span><span id="r-mortgage">$0</span></div>
+<div class="breakdown negative"><span>− Monthly Expenses</span><span id="r-expenses">$0</span></div>
+<div class="breakdown total"><span>= Net Monthly Cash Flow</span><span id="r-cashflow">$0</span></div>
+<div class="breakdown total"><span>Cash-on-Cash Return</span><span id="r-coc">0.00%</span></div>
+<div class="breakdown total"><span>Cap Rate</span><span id="r-cap">0.00%</span></div>
+</div>
+
+
+<div class="card mode-creative view-hidden">
+<h2>Creative Finance Calculator</h2>
+
+<label>Purchase Price</label>
+<input id="creativePrice" placeholder="$0" oninput="formatCurrencyCreative(this)">
+
+<label>Down Payment</label>
+<input id="creativeDown" placeholder="$0" oninput="formatCurrencyCreative(this)">
+
+<label>Seller Terms Structure</label>
+<select id="creativeStructure" onchange="calculateCreative()">
+<option value="PO">Owner Finance (Principal-Only Payments)</option>
+<option value="SUB2">Subject-To (Existing Loan Execution)</option>
+</select>
+
+<label>Term (Months)</label>
+<input type="number" id="creativeTerms" value="360" oninput="calculateCreative()">
+
+<label>Monthly Gross Rent Yield (Est.)</label>
+<input id="creativeRent" placeholder="$0" oninput="formatCurrencyCreative(this)">
+
+<label>Monthly Overhead Operating Expenses</label>
+<input id="creativeExpenses" placeholder="$0" oninput="formatCurrencyCreative(this)">
+
+<div class="btn-group">
+<button class="secondary" onclick="resetForm()">Reset Workspace</button>
+</div>
+</div>
+
+<div class="card mode-creative view-hidden">
+<h3>Creative Structure Analysis</h3>
+
+<div class="breakdown"><span>Financed Loan Principal</span><span id="c-financed">$0</span></div>
+<div class="breakdown negative"><span>Monthly Principal Payment</span><span id="c-mortgage">$0</span></div>
+<div class="breakdown negative"><span>Monthly Operating Expenses</span><span id="c-expenses">$0</span></div>
+<div class="breakdown"><span>Total Monthly Cash Cost</span><span id="c-totalout">$0</span></div>
+<div class="breakdown total"><span>Net Cash Flow Spread</span><span id="c-cashflow">$0</span></div>
+<div class="breakdown total"><span>Cash-on-Cash Yield Rate</span><span id="c-coc">0.00%</span></div>
+</div>
+
+<!-- ============ SWIFT REPAIR ESTIMATOR ============ -->
+<div class="card mode-repair re-card-wide view-hidden">
+<h2>🛠️ Swift Repair Estimator</h2>
+<p style="text-align:center;opacity:.7;margin-top:-10px;margin-bottom:15px;font-size:13px;">State-specific repair pricing, feeding straight into your Deal Calculator</p>
+
+<div class="re-subtoggle">
+<button class="active" id="reBtnNew" onclick="reSwitchSub('new')">New Estimate</button>
+<button id="reBtnSaved" onclick="reSwitchSub('saved')">Saved</button>
+<button id="reBtnAdmin" onclick="reSwitchSub('admin')">Admin Pricing</button>
+</div>
+
+<div id="reContent"></div>
+</div>
+
+</div>
+
+<script>
+let OFFER_PERCENT=0.6
+
+/* VIEW CONTROLLER ENGINE */
+function switchView(mode) {
+const wholesaleCards = document.querySelectorAll('.mode-wholesale');
+const rentalCards = document.querySelectorAll('.mode-rental');
+const creativeCards = document.querySelectorAll('.mode-creative');
+const repairCards = document.querySelectorAll('.mode-repair');
+
+const btnWholesale = document.getElementById('btnWholesale');
+const btnRental = document.getElementById('btnRental');
+const btnCreative = document.getElementById('btnCreative');
+const btnRepair = document.getElementById('btnRepair');
+
+// Hide all sets
+wholesaleCards.forEach(c => c.classList.add('view-hidden'));
+rentalCards.forEach(c => c.classList.add('view-hidden'));
+creativeCards.forEach(c => c.classList.add('view-hidden'));
+repairCards.forEach(c => c.classList.add('view-hidden'));
+
+btnWholesale.classList.remove('active');
+btnRental.classList.remove('active');
+btnCreative.classList.remove('active');
+btnRepair.classList.remove('active');
+
+// Reveal active workspace layout
+if(mode === 'wholesale') {
+wholesaleCards.forEach(c => c.classList.remove('view-hidden'));
+btnWholesale.classList.add('active');
+} else if(mode === 'rental') {
+rentalCards.forEach(c => c.classList.remove('view-hidden'));
+btnRental.classList.add('active');
+} else if(mode === 'creative') {
+creativeCards.forEach(c => c.classList.remove('view-hidden'));
+btnCreative.classList.add('active');
+} else if(mode === 'repair') {
+repairCards.forEach(c => c.classList.remove('view-hidden'));
+btnRepair.classList.add('active');
+reInit();
+}
+}
+
+function setPercent(val,btn){
+OFFER_PERCENT=val
+document.querySelectorAll('.percent-btn').forEach(b=>b.classList.remove('active'))
+btn.classList.add('active')
+document.getElementById('percentLabel').textContent=Math.round(val*100)+'%'
+calculate()
+}
+
+function parseCurrency(v){
+return parseFloat(v.replace(/[^0-9.-]/g,''))||0
+}
+
+function formatCurrency(input){
+let v=input.value.replace(/[^0-9]/g,'')
+if(v) input.value='$'+Number(v).toLocaleString()
+calculate()
+}
+
+function money(n){
+return n.toLocaleString('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0})
+}
+
+function estimateRepair(){
+let sqft=parseFloat(document.getElementById("sqft").value)||0
+if(sqft>0){
+let estimate=sqft*30
+document.getElementById("repair").value=money(estimate)
+}
+calculate()
+}
+
+function calculate(){
+let arv=parseCurrency(document.getElementById("arv").value)
+let repair=parseCurrency(document.getElementById("repair").value)
+let wp=parseFloat(document.getElementById("wholesale").value)||0
+let bufferPercent=parseFloat(document.getElementById("buyerBuffer").value)||0
+
+let propType=document.getElementById("propType").value
+let beds=parseInt(document.getElementById("beds").value)||0
+let killBox=document.getElementById("killBox")
+
+let isKilled=false
+if(propType === "SFH" && beds <= 2) {
+killBox.style.display="block"
+isKilled=true
+} else {
+killBox.style.display="none"
+}
+
+let asis=arv*OFFER_PERCENT
+let wholesaleFee=asis*(wp/100)
+let bufferAmount=arv*bufferPercent
+let offer=isKilled ? 0 : (asis-repair-wholesaleFee-bufferAmount)
+offer=Math.max(0,offer)
+
+let asking=parseCurrency(document.getElementById("askingPrice").value)
+let verdict=document.getElementById("askingVerdict")
+let verdictText=document.getElementById("verdictText")
+let vAsking=document.getElementById("v-asking")
+let vMao=document.getElementById("v-mao")
+let vDiff=document.getElementById("v-diff")
+verdict.classList.remove("deal-works","deal-negotiate","deal-fails")
+vAsking.textContent=money(asking)
+vMao.textContent=money(offer)
+let diff=offer-asking
+vDiff.textContent=money(diff)
+if(!asking){
+  verdictText.textContent="Enter the seller asking price to see if the deal works."
+}else if(isKilled){
+  verdictText.textContent="❌ DEAL KILLED"
+  verdict.classList.add("deal-fails")
+}else if(asking<=offer){
+  verdictText.textContent="🔥 DEAL WORKS — ASKING IS AT OR BELOW MAO"
+  verdict.classList.add("deal-works")
+}else if(asking<=offer*1.05){
+  verdictText.textContent="🟡 NEGOTIATE — CLOSE TO YOUR MAO"
+  verdict.classList.add("deal-negotiate")
+}else{
+  verdictText.textContent="🔴 DEAL DOES NOT WORK — ASKING IS ABOVE MAO"
+  verdict.classList.add("deal-fails")
+}
+
+document.getElementById("asis").value=money(asis)
+document.getElementById("wholesaleAmount").value=money(wholesaleFee)
+document.getElementById("total").value=money(offer)
+
+document.getElementById("b-arv").textContent=money(arv)
+document.getElementById("b-asis").textContent=money(asis)
+document.getElementById("b-repair").textContent=money(repair)
+document.getElementById("b-wholesale").textContent=money(wholesaleFee)
+document.getElementById("b-buffer").textContent=money(bufferAmount)
+document.getElementById("b-total").textContent=money(offer)
+
+let buyer=arv*0.75-repair
+document.getElementById("buyerPrice").textContent=money(buyer)
+
+let holding=arv*0.10
+document.getElementById("flipCost").textContent=money(holding)
+
+let profit=isKilled ? 0 : (arv-offer-repair-holding)
+document.getElementById("flipProfit").textContent=money(profit)
+
+let spread=isKilled ? 0 : (buyer-offer)
+document.getElementById("spread").textContent=money(spread)
+
+let profitLevel="Low"
+if(spread>=5000) profitLevel="👍 Decent Deal"
+if(spread>=10000) profitLevel="🔥 Strong Deal"
+if(spread>=20000) profitLevel="🚀 Home Run"
+if(isKilled) profitLevel="❌ KILLED"
+document.getElementById("profitLevel").textContent=profitLevel
+
+let score="⚠️ Risky"
+if(offer<=arv*0.65 && offer > 0) score="🔥 Great Deal"
+else if(offer<=arv*0.75 && offer > 0) score="👍 Good"
+else if(isKilled) score="❌ KILLED"
+document.getElementById("dealScore").textContent=score
+let vm=document.getElementById("verdictMain"), vs=document.getElementById("verdictSub");
+vm.className="verdict-main "+(isKilled?"bad":(spread>=10000?"good":(spread>0?"warn":"bad")));
+vm.textContent=isKilled?"❌ PASS — DEAL KILLED":(spread>=20000?"🚀 HOME RUN":(spread>=10000?"🔥 STRONG DEAL":(spread>=5000?"👍 DECENT DEAL":(offer>0?"⚠️ NEGOTIATE":"ENTER ARV / REPAIRS"))));
+vs.textContent=offer>0?`MAO ${money(offer)} • Assignment spread ${money(spread)} • Buyer margin ${money(Math.max(0,spread))}`:"Enter enough data to calculate a reliable offer.";
+}
+
+function generateOffer(){
+let arv=parseCurrency(document.getElementById("arv").value)
+let repair=parseCurrency(document.getElementById("repair").value)
+let offer=parseCurrency(document.getElementById("total").value)
+let address=document.getElementById("address").value || "Property Asset"
+
+if(offer <= 0) {
+alert("Cannot generate an offer for a killed or zeroed out deal profile.")
+return
+}
+
+let text=`INVESTOR DEAL
+
+Address: ${address}
+ARV: ${money(arv)}
+Repairs: ${money(repair)}
+
+Max Offer: ${money(offer)}
+
+TERMS OF SUBMISSION:
+- We close within 30 days.
+- We will be using our own contract and preferred title company.
+- Seller finance offers strictly structured around Principal-Only payments.
+
+(Your Company)`
+
+navigator.clipboard.writeText(text).then(()=>{
+alert("Offer copied")
+})
+}
+
+function resetForm(){
+document.querySelectorAll('input').forEach(i=>{
+if(!i.hasAttribute("readonly")) i.value=''
+})
+document.getElementById("propType").value="SFH"
+document.getElementById("beds").value="3"
+document.getElementById("buyerBuffer").value="0.15"
+calculate()
+calculateRental()
+calculateCreative()
+}
+
+function openMap(){
+let address=document.getElementById("address").value
+window.open("https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(address))
+}
+
+/* ================================================================
+   ARV FINDER MODULE
+   Averages Zillow / Redfin / Realtor.com / Other estimates into a
+   single Estimated ARV, then syncs that value into the Wholesale
+   Flip ARV field. Estimates are stored per property (keyed off the
+   Property Address) so switching tabs — or coming back to the same
+   deal later — never loses the numbers.
+================================================================ */
+let arvStore = {};
+try{ arvStore = JSON.parse(localStorage.getItem('swiftARVData')||'{}'); }catch(e){ arvStore = {}; }
+
+function arvAddressKey(){
+let addr = (document.getElementById("address").value||'').trim().toLowerCase().replace(/\s+/g,' ');
+return addr || '_unsaved_property_';
+}
+
+function arvPersist(){
+try{ localStorage.setItem('swiftARVData', JSON.stringify(arvStore)); }catch(e){}
+}
+
+function openARV(){
+let key = arvAddressKey();
+let addrVal = document.getElementById("address").value.trim();
+document.getElementById("arvAddressNote").textContent = addrVal ? ("Property: "+addrVal) : "No property address set — estimates will be saved once you add one.";
+
+let saved = arvStore[key];
+document.getElementById("arvZillow").value = saved && saved.zillow ? money(saved.zillow) : '';
+document.getElementById("arvRedfin").value = saved && saved.redfin ? money(saved.redfin) : '';
+document.getElementById("arvRealtor").value = saved && saved.realtor ? money(saved.realtor) : '';
+document.getElementById("arvOther").value = saved && saved.other ? money(saved.other) : '';
+document.getElementById("arvEstimatedValue").textContent = saved && saved.estimatedARV ? money(saved.estimatedARV) : '$0';
+document.getElementById("arvSyncNote").textContent = "Enter at least one estimate and click Calculate ARV.";
+
+document.getElementById("arvModalOverlay").classList.add('show');
+}
+
+function closeARV(){
+document.getElementById("arvModalOverlay").classList.remove('show');
+}
+
+function formatCurrencyARV(input){
+let v=input.value.replace(/[^0-9]/g,'')
+if(v) input.value='$'+Number(v).toLocaleString()
+}
+
+function calculateARVFinder(){
+let zillow=parseCurrency(document.getElementById("arvZillow").value)
+let redfin=parseCurrency(document.getElementById("arvRedfin").value)
+let realtor=parseCurrency(document.getElementById("arvRealtor").value)
+let other=parseCurrency(document.getElementById("arvOther").value)
+
+let entered = [zillow,redfin,realtor,other].filter(v=>v>0)
+if(!entered.length){
+document.getElementById("arvSyncNote").textContent = "Enter at least one estimate to calculate the ARV."
+return
+}
+
+let estimatedARV = entered.reduce((a,b)=>a+b,0) / entered.length
+
+document.getElementById("arvEstimatedValue").textContent = money(estimatedARV)
+
+let key = arvAddressKey();
+arvStore[key] = {zillow,redfin,realtor,other,estimatedARV,updatedAt:new Date().toISOString()}
+arvPersist()
+
+// Sync into the Wholesale Flip ARV field and refresh the deal breakdown.
+document.getElementById("arv").value = money(estimatedARV)
+calculate()
+
+document.getElementById("arvSyncNote").textContent = "Synced to Wholesale Flip ARV field."
+reToast("Estimated ARV "+money(estimatedARV)+" applied to Wholesale Flip")
+}
+
+function openComps(){
+window.open("https://www.pennymac.com/home-value-estimator")
+}
+
+/* RENTAL CALCULATOR FUNCTIONALITY */
+function formatCurrencyRental(input){
+let v=input.value.replace(/[^0-9]/g,'')
+if(v) input.value='$'+Number(v).toLocaleString()
+calculateRental()
+}
+
+function calculateRental(){
+let rent = parseCurrency(document.getElementById("rentMonthly").value)
+let purchase = parseCurrency(document.getElementById("rentPurchase").value)
+let down = parseCurrency(document.getElementById("rentDown").value)
+let mortgage = parseCurrency(document.getElementById("rentMortgage").value)
+let expenses = parseCurrency(document.getElementById("rentExpenses").value)
+
+let cashflow = rent - mortgage - expenses
+let annualCashflow = cashflow * 12
+let coc = down > 0 ? (annualCashflow / down) * 100 : 0
+
+let annualNetOperatingIncome = (rent - expenses) * 12
+let capRate = purchase > 0 ? (annualNetOperatingIncome / purchase) * 100 : 0
+
+document.getElementById("r-gross").textContent = money(rent)
+document.getElementById("r-mortgage").textContent = money(mortgage)
+document.getElementById("r-expenses").textContent = money(expenses)
+document.getElementById("r-cashflow").textContent = money(cashflow)
+document.getElementById("r-coc").textContent = coc.toFixed(2) + "%"
+document.getElementById("r-cap").textContent = capRate.toFixed(2) + "%"
+}
+
+/* CREATIVE FINANCE CALCULATOR FUNCTIONALITY */
+function formatCurrencyCreative(input){
+let v=input.value.replace(/[^0-9]/g,'')
+if(v) input.value='$'+Number(v).toLocaleString()
+calculateCreative()
+}
+
+function calculateCreative(){
+let price = parseCurrency(document.getElementById("creativePrice").value)
+let down = parseCurrency(document.getElementById("creativeDown").value)
+let terms = parseFloat(document.getElementById("creativeTerms").value) || 1
+let rent = parseCurrency(document.getElementById("creativeRent").value)
+let expenses = parseCurrency(document.getElementById("creativeExpenses").value)
+
+let financed = price - down
+if(financed < 0) financed = 0
+
+let monthlyP = financed / terms
+if (terms <= 0) monthlyP = 0
+
+let totalOut = monthlyP + expenses
+let cashflow = rent - totalOut
+let annualCashflow = cashflow * 12
+let coc = down > 0 ? (annualCashflow / down) * 100 : 0
+
+document.getElementById("c-financed").textContent = money(financed)
+document.getElementById("c-mortgage").textContent = money(monthlyP)
+document.getElementById("c-expenses").textContent = money(expenses)
+document.getElementById("c-totalout").textContent = money(totalOut)
+document.getElementById("c-cashflow").textContent = money(cashflow)
+document.getElementById("c-coc").textContent = coc.toFixed(2) + "%"
+}
+
+/* ================================================================
+   SWIFT REPAIR ESTIMATOR MODULE
+   Self-contained; only touches #address / #sqft / #repair on the
+   Deal Calculator when "Send to Deal Analyzer" is clicked.
+================================================================ */
+
+const RE_STATES = ["Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming","Washington, D.C."];
+
+// Regional construction-cost multipliers — starter defaults, editable in Admin Pricing
+const RE_STATE_MULT = {
+"Alabama":0.85,"Alaska":1.30,"Arizona":1.00,"Arkansas":0.85,"California":1.35,"Colorado":1.08,
+"Connecticut":1.20,"Delaware":1.05,"Florida":1.00,"Georgia":0.95,"Hawaii":1.45,"Idaho":0.95,
+"Illinois":1.08,"Indiana":0.92,"Iowa":0.92,"Kansas":0.90,"Kentucky":0.88,"Louisiana":0.88,
+"Maine":1.00,"Maryland":1.12,"Massachusetts":1.25,"Michigan":0.98,"Minnesota":1.05,"Mississippi":0.82,
+"Missouri":0.90,"Montana":0.98,"Nebraska":0.92,"Nevada":1.05,"New Hampshire":1.05,"New Jersey":1.22,
+"New Mexico":0.90,"New York":1.30,"North Carolina":0.93,"North Dakota":0.95,"Ohio":0.93,"Oklahoma":0.85,
+"Oregon":1.12,"Pennsylvania":1.02,"Rhode Island":1.15,"South Carolina":0.90,"South Dakota":0.90,
+"Tennessee":0.90,"Texas":0.95,"Utah":0.98,"Vermont":1.03,"Virginia":1.05,"Washington":1.18,
+"West Virginia":0.85,"Wisconsin":1.00,"Wyoming":0.95,"Washington, D.C.":1.30
+};
+
+function reNoneLevel(){ return {key:"none",label:"No work",cost:0}; }
+const RE_CATEGORIES = [
+{id:"roof",label:"Roof",unit:"sqft",unitLabel:"sq ft of roof",auto:p=>p.sqft||null,levels:[reNoneLevel(),
+  {key:"minor_patch",label:"Minor patch",cost:3},{key:"multiple_repairs",label:"Multiple repairs",cost:6},
+  {key:"partial_replacement",label:"Partial replacement",cost:6.5},{key:"full_replacement",label:"Full replacement",cost:8.5}]},
+{id:"kitchen",label:"Kitchen",unit:"kitchen",unitLabel:"kitchen(s)",auto:p=>1,levels:[reNoneLevel(),
+  {key:"light_cosmetic",label:"Light cosmetic",cost:3500},{key:"moderate_rehab",label:"Moderate rehab",cost:12000},
+  {key:"full_rehab",label:"Full rehab",cost:28000}]},
+{id:"bathrooms",label:"Bathrooms",unit:"bathroom",unitLabel:"bathroom(s)",auto:p=>p.bathrooms||null,levels:[reNoneLevel(),
+  {key:"light_cosmetic",label:"Light cosmetic",cost:1500},{key:"moderate_rehab",label:"Moderate rehab",cost:6000},
+  {key:"full_gut_rehab",label:"Full gut rehab",cost:13000}]},
+{id:"flooring",label:"Flooring",unit:"sqft",unitLabel:"sq ft",auto:p=>p.sqft||null,levels:[reNoneLevel(),
+  {key:"patch_repair",label:"Patch repair",cost:1.5},{key:"partial_replacement",label:"Partial replacement",cost:3.5},
+  {key:"full_replacement",label:"Full replacement",cost:6}]},
+{id:"interior_paint",label:"Interior paint",unit:"sqft",unitLabel:"sq ft (living area)",auto:p=>p.sqft||null,levels:[reNoneLevel(),
+  {key:"touch_up",label:"Touch-up",cost:0.5},{key:"full_paint",label:"Full interior paint",cost:2.25}]},
+{id:"exterior_paint",label:"Exterior paint",unit:"sqft",unitLabel:"sq ft (exterior est.)",auto:p=>p.sqft||null,levels:[reNoneLevel(),
+  {key:"touch_up",label:"Touch-up",cost:0.75},{key:"full_paint",label:"Full exterior paint",cost:3.0}]},
+{id:"hvac",label:"HVAC",unit:"unit",unitLabel:"HVAC unit(s)",auto:p=>1,levels:[reNoneLevel(),
+  {key:"minor_repair",label:"Minor repair",cost:450},{key:"major_repair",label:"Major repair",cost:2200},
+  {key:"full_replacement",label:"Full replacement",cost:6500}]},
+{id:"electrical",label:"Electrical",unit:"sqft",unitLabel:"sq ft",auto:p=>p.sqft||null,levels:[reNoneLevel(),
+  {key:"minor",label:"Minor",cost:1.0},{key:"moderate",label:"Moderate",cost:3.0},{key:"major_rewire",label:"Major / full rewire",cost:6.5}]},
+{id:"plumbing",label:"Plumbing",unit:"fixture",unitLabel:"fixture(s)",auto:p=>(p.bathrooms||0)+1,levels:[reNoneLevel(),
+  {key:"minor",label:"Minor",cost:350},{key:"moderate",label:"Moderate",cost:1200},{key:"major",label:"Major",cost:3500},
+  {key:"full_repipe",label:"Full repipe",cost:8000}]},
+{id:"windows",label:"Windows",unit:"window",unitLabel:"window(s)",auto:p=>null,levels:[reNoneLevel(),
+  {key:"repair",label:"Repair",cost:150},{key:"replace_standard",label:"Replace — standard",cost:550},{key:"replace_full",label:"Replace — full house",cost:800}]},
+{id:"ext_doors",label:"Exterior doors",unit:"door",unitLabel:"door(s)",auto:p=>null,levels:[reNoneLevel(),
+  {key:"repair",label:"Repair",cost:100},{key:"replace",label:"Replace",cost:950}]},
+{id:"int_doors",label:"Interior doors",unit:"door",unitLabel:"door(s)",auto:p=>null,levels:[reNoneLevel(),
+  {key:"repair",label:"Repair",cost:60},{key:"replace",label:"Replace",cost:280}]},
+{id:"siding",label:"Siding",unit:"sqft",unitLabel:"sq ft",auto:p=>p.sqft||null,levels:[reNoneLevel(),
+  {key:"patch",label:"Patch",cost:2.5},{key:"partial_replace",label:"Partial replacement",cost:6},{key:"full_replace",label:"Full replacement",cost:9.5}]},
+{id:"gutters",label:"Gutters",unit:"linear ft",unitLabel:"linear ft",auto:p=>null,levels:[reNoneLevel(),
+  {key:"repair",label:"Repair",cost:4},{key:"full_replace",label:"Full replacement",cost:9}]},
+{id:"foundation",label:"Foundation",unit:"flat",unitLabel:"job",auto:p=>1,levels:[reNoneLevel(),
+  {key:"minor_crack",label:"Minor crack repair",cost:1500},{key:"moderate_repair",label:"Moderate repair",cost:6500},{key:"major_structural",label:"Major structural",cost:20000}]},
+{id:"framing",label:"Framing",unit:"flat",unitLabel:"job",auto:p=>1,levels:[reNoneLevel(),
+  {key:"minor",label:"Minor",cost:1500},{key:"moderate",label:"Moderate",cost:6000},{key:"major",label:"Major",cost:18000}]},
+{id:"drywall",label:"Drywall",unit:"sqft",unitLabel:"sq ft",auto:p=>p.sqft||null,levels:[reNoneLevel(),
+  {key:"patch",label:"Patch",cost:1.0},{key:"partial_replace",label:"Partial replacement",cost:2.5},{key:"full_replace",label:"Full replacement",cost:4.0}]},
+{id:"insulation",label:"Insulation",unit:"sqft",unitLabel:"sq ft",auto:p=>p.sqft||null,levels:[reNoneLevel(),
+  {key:"partial",label:"Partial",cost:1.0},{key:"full",label:"Full",cost:2.25}]},
+{id:"water_heater",label:"Water heater",unit:"unit",unitLabel:"unit(s)",auto:p=>1,levels:[reNoneLevel(),
+  {key:"repair",label:"Repair",cost:250},{key:"replace",label:"Replace",cost:1600}]},
+{id:"landscaping",label:"Landscaping",unit:"flat",unitLabel:"job",auto:p=>1,levels:[reNoneLevel(),
+  {key:"basic_cleanup",label:"Basic cleanup",cost:800},{key:"full_landscaping",label:"Full landscaping",cost:4500}]},
+{id:"driveway",label:"Driveway",unit:"sqft",unitLabel:"sq ft",auto:p=>null,levels:[reNoneLevel(),
+  {key:"patch",label:"Patch",cost:1.5},{key:"repave",label:"Repave",cost:4.5},{key:"replace",label:"Replace",cost:7.5}]},
+{id:"garage",label:"Garage",unit:"flat",unitLabel:"job",auto:p=>1,levels:[reNoneLevel(),
+  {key:"minor",label:"Minor",cost:1200},{key:"moderate",label:"Moderate",cost:4500},{key:"full",label:"Full repair",cost:12000}]},
+{id:"basement",label:"Basement",unit:"sqft",unitLabel:"sq ft",auto:p=>null,levels:[reNoneLevel(),
+  {key:"minor",label:"Minor",cost:5},{key:"moderate",label:"Moderate",cost:15},{key:"full_finish",label:"Full finish",cost:35}]},
+{id:"attic",label:"Attic",unit:"flat",unitLabel:"job",auto:p=>1,levels:[reNoneLevel(),
+  {key:"minor",label:"Minor",cost:800},{key:"moderate",label:"Moderate",cost:2500},{key:"full",label:"Full",cost:7000}]},
+{id:"mold",label:"Mold remediation",unit:"sqft",unitLabel:"sq ft affected",auto:p=>null,levels:[reNoneLevel(),
+  {key:"minor",label:"Minor",cost:5},{key:"moderate",label:"Moderate",cost:12},{key:"severe",label:"Severe",cost:25}]},
+{id:"water_damage",label:"Water damage",unit:"sqft",unitLabel:"sq ft affected",auto:p=>null,levels:[reNoneLevel(),
+  {key:"minor",label:"Minor",cost:4},{key:"moderate",label:"Moderate",cost:10},{key:"severe",label:"Severe",cost:22}]},
+{id:"pest",label:"Pest / termite damage",unit:"flat",unitLabel:"job",auto:p=>1,levels:[reNoneLevel(),
+  {key:"treatment_only",label:"Treatment only",cost:600},{key:"minor_repair",label:"Minor repair",cost:2200},{key:"major_repair",label:"Major repair",cost:8000}]},
+{id:"demolition",label:"Demolition",unit:"sqft",unitLabel:"sq ft",auto:p=>p.sqft||null,levels:[reNoneLevel(),
+  {key:"partial",label:"Partial",cost:2},{key:"full",label:"Full",cost:5}]},
+{id:"debris",label:"Debris / cleanout",unit:"flat",unitLabel:"job",auto:p=>1,levels:[reNoneLevel(),
+  {key:"light",label:"Light",cost:500},{key:"heavy",label:"Heavy",cost:1800},{key:"full_house",label:"Full house",cost:4500}]},
+{id:"appliances",label:"Appliances",unit:"appliance",unitLabel:"appliance(s)",auto:p=>null,levels:[reNoneLevel(),
+  {key:"basic_package",label:"Basic package",cost:400},{key:"mid_package",label:"Mid package",cost:800},{key:"full_package",label:"Full package",cost:1600}]},
+{id:"other",label:"Other / custom repair",unit:"flat",unitLabel:"job",auto:p=>1,levels:[reNoneLevel(),{key:"custom",label:"Custom (manual entry)",cost:null}]}
+];
+const RE_COST_LEVELS = ["low","typical","high"];
+const RE_LOW_FACTOR = 0.75, RE_HIGH_FACTOR = 1.30;
+
+let reInitDone = false;
+let reWholesaleSyncBound = false;
+let reActiveSub = "new";
+let reCustomCategories = [];
+let reOverrides = {};
+let reSavedEstimates = [];
+let reAdminState = RE_STATES[0];
+let reAdminCat = RE_CATEGORIES[0].id;
+
+function reBlankEstimate(){
+return {
+id:null,
+property:{address:"",city:"",state:"",zip:"",sqft:"",bedrooms:"",bathrooms:"",yearBuilt:"",stories:"",propType:"",condition:""},
+costLevel:"typical",contingencyPct:20,contingencyCustom:"",repairs:{},sentToDeal:false,createdAt:null
+};
+}
+let reEstimate = reBlankEstimate();
+
+function reAllCategories(){ return RE_CATEGORIES.concat(reCustomCategories); }
+function reGetCategory(id){ return reAllCategories().find(c=>c.id===id); }
+function reOverrideKey(state,catId,level){ return state+"|"+catId+"|"+level; }
+
+function reComputeDefaultPrice(state,cat,level){
+if(level.cost===null || level.cost===undefined) return null;
+let mult = RE_STATE_MULT[state] || 1.0;
+let typical = level.cost * mult;
+return {low:typical*RE_LOW_FACTOR, typical:typical, high:typical*RE_HIGH_FACTOR};
+}
+
+function reGetPrice(state,catId,levelKey){
+let cat = reGetCategory(catId);
+if(!cat) return null;
+let level = cat.levels.find(l=>l.key===levelKey);
+if(!level) return null;
+if(level.key==="none") return {low:0,typical:0,high:0,unit:cat.unit,active:true,source:"n/a"};
+let key = reOverrideKey(state,catId,levelKey);
+if(reOverrides[key] && reOverrides[key].active!==false) return Object.assign({unit:cat.unit},reOverrides[key]);
+if(reOverrides[key] && reOverrides[key].active===false) return null;
+let def = reComputeDefaultPrice(state,cat,level);
+if(!def) return null;
+return Object.assign({unit:cat.unit,active:true,source:"Starter regional estimate — verify"},def);
+}
+
+function reUnitCostFor(state,catId,levelKey,costLevel){
+let p = reGetPrice(state,catId,levelKey);
+if(!p) return null;
+return p[costLevel];
+}
+
+/* ---- localStorage persistence ---- */
+function reLoadAll(){
+try{ reOverrides = JSON.parse(localStorage.getItem('swiftRepairOverrides')||'{}'); }catch(e){ reOverrides = {}; }
+try{
+let cc = JSON.parse(localStorage.getItem('swiftRepairCustomCategories')||'[]');
+reCustomCategories = cc.map(c=>({id:c.id,label:c.label,unit:c.unit,unitLabel:c.unitLabel,auto:()=>1,
+levels:[reNoneLevel(),{key:'standard',label:'Standard',cost:c.cost}]}));
+}catch(e){ reCustomCategories = []; }
+try{ reSavedEstimates = JSON.parse(localStorage.getItem('swiftRepairEstimates')||'[]'); }catch(e){ reSavedEstimates = []; }
+}
+function rePersistOverrides(){ try{ localStorage.setItem('swiftRepairOverrides', JSON.stringify(reOverrides)); }catch(e){ reToast('Could not save pricing change'); } }
+function rePersistCustomCategories(){
+try{
+let plain = reCustomCategories.map(c=>({id:c.id,label:c.label,unit:c.unit,unitLabel:c.unitLabel,cost:c.levels[1].cost}));
+localStorage.setItem('swiftRepairCustomCategories', JSON.stringify(plain));
+}catch(e){}
+}
+function rePersistEstimates(){ try{ localStorage.setItem('swiftRepairEstimates', JSON.stringify(reSavedEstimates)); }catch(e){ reToast('Could not save estimate'); } }
+
+/* ---- calc ---- */
+function reAutoQtyFor(cat){
+let p = reEstimate.property;
+let props = {sqft:parseFloat(p.sqft)||0,bathrooms:parseFloat(p.bathrooms)||0};
+let v = cat.auto(props);
+return v && v>0 ? v : 1;
+}
+function reEnsureEntry(catId){
+if(!reEstimate.repairs[catId]){
+let cat = reGetCategory(catId);
+reEstimate.repairs[catId] = {included:false, level:cat.levels[1]?cat.levels[1].key:cat.levels[0].key, qty:reAutoQtyFor(cat), override:null, customLabel:""};
+}
+return reEstimate.repairs[catId];
+}
+function reLineResult(catId){
+let cat = reGetCategory(catId);
+let entry = reEnsureEntry(catId);
+if(!entry.included || entry.level==="none") return {included:false};
+let state = reEstimate.property.state;
+let unitCost=null, noData=false;
+if(catId==="other"){ unitCost=null; }
+else{ unitCost = state ? reUnitCostFor(state,catId,entry.level,reEstimate.costLevel) : null; if(unitCost===null) noData=true; }
+let cost;
+if(entry.override!==null && entry.override!==undefined && entry.override!==""){ cost = parseFloat(entry.override)||0; }
+else if(catId==="other"){ cost=0; noData=true; }
+else if(noData){ cost=0; }
+else{ cost = unitCost * (parseFloat(entry.qty)||0); }
+return {included:true,cat,level:entry.level,qty:entry.qty,unitCost,cost,noData,
+isOverride:entry.override!==null && entry.override!=="" && entry.override!==undefined, customLabel:entry.customLabel};
+}
+function reComputeTotals(){
+let base=0; let lines=[];
+reAllCategories().forEach(cat=>{
+let r = reLineResult(cat.id);
+if(r.included){ base+=r.cost; lines.push(r); }
+});
+let pct = reEstimate.contingencyPct==="custom" ? (parseFloat(reEstimate.contingencyCustom)||0) : reEstimate.contingencyPct;
+let contingency = base*(pct/100);
+let total = base+contingency;
+return {base,pct,contingency,total,lines};
+}
+function reRecalcAutoQty(){
+reAllCategories().forEach(cat=>{
+let entry = reEstimate.repairs[cat.id];
+if(entry){
+let autoVal = cat.auto({sqft:parseFloat(reEstimate.property.sqft)||0,bathrooms:parseFloat(reEstimate.property.bathrooms)||0});
+if(autoVal) entry.qty = autoVal;
+}
+});
+}
+
+/* ---- render helpers ---- */
+function reEl(html){ let d=document.createElement('div'); d.innerHTML=html.trim(); return d.firstElementChild; }
+function reToast(msg){
+let t = document.getElementById('reToast');
+if(!t){ t = reEl('<div class="re-toast" id="reToast"></div>'); document.body.appendChild(t); }
+t.textContent = msg; t.classList.add('show');
+clearTimeout(t._h); t._h = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+function reSyncFromWholesale(){
+let mainAddr = document.getElementById('address');
+let mainSqft = document.getElementById('sqft');
+
+// Wholesale Flip is the master property profile.
+// Always copy the latest address and square footage into Repair Estimator.
+if(mainAddr) reEstimate.property.address = mainAddr.value || '';
+if(mainSqft) reEstimate.property.sqft = mainSqft.value ? (parseCurrency(mainSqft.value) || mainSqft.value) : '';
+
+// Refresh quantities that are based on square footage.
+reRecalcAutoQty();
+}
+
+function reInit(){
+reBindWholesaleSync();
+if(!reInitDone){
+  reInitDone = true;
+  reLoadAll();
+}
+
+// Always sync the latest Wholesale Flip property data before opening/rendering Repair Estimator.
+reSyncFromWholesale();
+reRender();
+}
+
+function reBindWholesaleSync(){
+if(reWholesaleSyncBound) return;
+let mainAddr = document.getElementById('address');
+let mainSqft = document.getElementById('sqft');
+if(!mainAddr && !mainSqft) return;
+
+reWholesaleSyncBound = true;
+
+if(mainAddr){
+  mainAddr.addEventListener('input', ()=>{
+    reEstimate.property.address = mainAddr.value || '';
+  });
+}
+if(mainSqft){
+  mainSqft.addEventListener('input', ()=>{
+    reEstimate.property.sqft = mainSqft.value ? (parseCurrency(mainSqft.value) || mainSqft.value) : '';
+    reRecalcAutoQty();
+  });
+}
+}
+
+function reSwitchSub(view){
+reActiveSub = view;
+document.getElementById('reBtnNew').classList.toggle('active', view==='new');
+document.getElementById('reBtnSaved').classList.toggle('active', view==='saved');
+document.getElementById('reBtnAdmin').classList.toggle('active', view==='admin');
+reRender();
+}
+
+function reRender(){
+// Preserve whatever the user is typing/selecting, and the scroll position —
+// rebuilding the DOM would otherwise steal focus and jump the page to the top.
+let active = document.activeElement;
+let restoreId = null, selStart = null, selEnd = null;
+if(active && active.id && active.id.indexOf('re_')===0 &&
+   (active.tagName==='INPUT' || active.tagName==='SELECT' || active.tagName==='TEXTAREA')){
+  restoreId = active.id;
+  if(active.tagName==='INPUT' || active.tagName==='TEXTAREA'){
+    try{ selStart = active.selectionStart; selEnd = active.selectionEnd; }catch(e){}
+  }
+}
+let pageScrollY = window.scrollY;
+let catList = document.getElementById('re_catList');
+let catListScrollTop = catList ? catList.scrollTop : null;
+
+reRenderRaw();
+
+if(restoreId){
+  let el = document.getElementById(restoreId);
+  if(el){
+    el.focus({preventScroll:true});
+    if(selStart!==null && el.setSelectionRange){
+      try{ el.setSelectionRange(selStart, selEnd); }catch(e){}
+    }
+  }
+}
+let newCatList = document.getElementById('re_catList');
+if(newCatList && catListScrollTop!==null) newCatList.scrollTop = catListScrollTop;
+window.scrollTo(0, pageScrollY);
+}
+
+function reRenderRaw(){
+let c = document.getElementById('reContent');
+if(!c) return;
+c.innerHTML = "";
+if(reActiveSub==="new") reRenderNew(c);
+else if(reActiveSub==="saved") reRenderSaved(c);
+else reRenderAdmin(c);
+}
+
+/* ---- NEW ESTIMATE VIEW ---- */
+function reRenderNew(c){
+let p = reEstimate.property;
+
+c.appendChild(reEl('<div class="re-section-title">Property Information</div>'));
+let propWrap = reEl('<div></div>');
+propWrap.innerHTML = `
+<label>State *</label>
+<select id="re_state">
+<option value="">Select state…</option>
+${RE_STATES.map(s=>`<option value="${s}" ${p.state===s?'selected':''}>${s}</option>`).join('')}
+</select>
+<label>Property Address</label>
+<input type="text" id="re_address" value="${p.address}" placeholder="123 Main St">
+<div class="re-grid3">
+<div><label>City</label><input type="text" id="re_city" value="${p.city}"></div>
+<div><label>ZIP</label><input type="text" id="re_zip" value="${p.zip}"></div>
+</div>
+<div class="re-grid3">
+<div><label>Living Sq Ft</label><input type="text" inputmode="decimal" id="re_sqft" value="${p.sqft}"></div>
+<div><label>Bedrooms</label><input type="number" id="re_bed" value="${p.bedrooms}"></div>
+<div><label>Bathrooms</label><input type="text" inputmode="decimal" id="re_bath" value="${p.bathrooms}"></div>
+</div>
+<div class="re-grid3">
+<div><label>Year Built</label><input type="number" id="re_year" value="${p.yearBuilt}"></div>
+<div><label>Stories</label><input type="number" id="re_stories" value="${p.stories}"></div>
+<div><label>Property Type</label>
+<select id="re_ptype">${["Single Family","Multi-Family","Condo","Townhome","Manufactured","Other"].map(t=>`<option ${p.propType===t?'selected':''}>${t}</option>`).join('')}</select>
+</div>
+</div>
+<label>Overall Condition</label>
+<select id="re_cond">${["Excellent","Good","Fair","Poor","Distressed / Teardown"].map(t=>`<option ${p.condition===t?'selected':''}>${t}</option>`).join('')}</select>
+`;
+c.appendChild(propWrap);
+propWrap.querySelector('#re_state').onchange = e=>{ p.state=e.target.value; reRender(); };
+propWrap.querySelector('#re_address').oninput = e=>p.address=e.target.value;
+propWrap.querySelector('#re_city').oninput = e=>p.city=e.target.value;
+propWrap.querySelector('#re_zip').oninput = e=>p.zip=e.target.value;
+propWrap.querySelector('#re_sqft').oninput = e=>{ p.sqft=e.target.value; reRecalcAutoQty(); reRender(); };
+propWrap.querySelector('#re_bed').oninput = e=>p.bedrooms=e.target.value;
+propWrap.querySelector('#re_bath').oninput = e=>{ p.bathrooms=e.target.value; reRecalcAutoQty(); reRender(); };
+propWrap.querySelector('#re_year').oninput = e=>p.yearBuilt=e.target.value;
+propWrap.querySelector('#re_stories').oninput = e=>p.stories=e.target.value;
+propWrap.querySelector('#re_ptype').onchange = e=>p.propType=e.target.value;
+propWrap.querySelector('#re_cond').onchange = e=>p.condition=e.target.value;
+
+c.appendChild(reEl('<div class="re-section-title">Cost Level</div>'));
+let costPills = reEl('<div class="re-pillrow" id="re_costPills"></div>');
+c.appendChild(costPills);
+RE_COST_LEVELS.forEach(lvl=>{
+let pill = reEl(`<div class="re-pill ${reEstimate.costLevel===lvl?'active':''}">${lvl[0].toUpperCase()+lvl.slice(1)}</div>`);
+pill.onclick = ()=>{ reEstimate.costLevel=lvl; reRender(); };
+costPills.appendChild(pill);
+});
+
+c.appendChild(reEl('<div class="re-section-title">Contingency / Buffer</div>'));
+let contPills = reEl('<div class="re-pillrow" id="re_contPills"></div>');
+c.appendChild(contPills);
+[10,15,20,'custom'].forEach(v=>{
+let pill = reEl(`<div class="re-pill ${reEstimate.contingencyPct===v?'active':''}">${v==='custom'?'Custom':v+'%'}</div>`);
+pill.onclick = ()=>{ reEstimate.contingencyPct=v; reRender(); };
+contPills.appendChild(pill);
+});
+if(reEstimate.contingencyPct==='custom'){
+let inp = reEl(`<input type="number" class="re-custom-pct" placeholder="%" value="${reEstimate.contingencyCustom}">`);
+inp.oninput = e=>{ reEstimate.contingencyCustom=e.target.value; reRenderSummaryOnly(); };
+contPills.appendChild(inp);
+}
+
+let mainGrid = reEl('<div class="re-main-grid"></div>');
+let repairPanel = reEl('<div class="re-repair-panel"></div>');
+let summaryPanel = reEl('<div class="re-summary-panel"></div>');
+mainGrid.appendChild(repairPanel);
+mainGrid.appendChild(summaryPanel);
+
+repairPanel.appendChild(reEl('<div class="re-section-title">Repair Categories</div>'));
+if(!p.state){ repairPanel.appendChild(reEl('<div class="re-unit-note">Select a state above to load state-specific pricing.</div>')); }
+let catList = reEl('<div class="re-cat-list" id="re_catList"></div>');
+repairPanel.appendChild(catList);
+reAllCategories().forEach(cat=>{
+let entry = reEnsureEntry(cat.id);
+let r = reLineResult(cat.id);
+let row = reEl(`<div class="re-cat-row ${entry.included?'on':''}"></div>`);
+let top = reEl(`<div class="re-cat-top">
+<input type="checkbox" id="re_included_${cat.id}" ${entry.included?'checked':''}>
+<div class="re-name">${cat.label}</div>
+<div class="re-cost">${entry.included?money(r.cost):''}</div>
+</div>`);
+top.querySelector('input').onchange = e=>{ entry.included=e.target.checked; reRender(); };
+row.appendChild(top);
+
+let detail = reEl('<div class="re-cat-detail"></div>');
+let levelSel = reEl(`<select id="re_level_${cat.id}">${cat.levels.map(l=>`<option value="${l.key}" ${entry.level===l.key?'selected':''}>${l.label}</option>`).join('')}</select>`);
+levelSel.onchange = e=>{ entry.level=e.target.value; reRender(); };
+let qtyInp = reEl(`<input type="text" inputmode="decimal" step="any" id="re_qty_${cat.id}" value="${entry.qty}">`);
+qtyInp.oninput = e=>{ entry.qty=e.target.value; reRender(); };
+let row2 = reEl('<div class="re-row2"></div>');
+let lw = reEl('<div><label>Scope</label></div>'); lw.appendChild(levelSel);
+let qw = reEl('<div><label>Quantity</label></div>'); qw.appendChild(qtyInp);
+row2.appendChild(lw); row2.appendChild(qw);
+detail.appendChild(row2);
+detail.appendChild(reEl(`<div class="re-unit-note">Unit: ${cat.unitLabel}${r.included && r.unitCost!==null && r.unitCost!==undefined ? ' · Unit cost '+money(r.unitCost) : ''}</div>`));
+
+if(cat.id==="other"){
+let lblWrap = reEl('<div><label>Describe repair</label></div>');
+let lblInp = reEl(`<input type="text" id="re_customlabel_${cat.id}" placeholder="e.g. Sewer line replacement" value="${entry.customLabel||''}">`);
+lblInp.oninput = e=>entry.customLabel=e.target.value;
+lblWrap.appendChild(lblInp);
+detail.appendChild(lblWrap);
+}
+if(r.included && r.noData && cat.id!=="other"){
+detail.appendChild(reEl('<div class="re-nodata">Insufficient reliable pricing data — manually enter an estimate.</div>'));
+} else if(cat.id==="other" && entry.included){
+detail.appendChild(reEl('<div class="re-nodata">Custom repairs require a manual estimate.</div>'));
+}
+
+let ovWrap = reEl('<div style="display:flex;align-items:center;gap:8px;margin-top:4px;"></div>');
+ovWrap.appendChild(reEl('<label style="margin:0;flex:none;">Override $</label>'));
+let ovInp = reEl(`<input type="text" inputmode="decimal" id="re_override_${cat.id}" placeholder="$" value="${entry.override!==null?entry.override:''}" style="width:110px;margin-bottom:0;">`);
+ovInp.oninput = e=>{ entry.override = e.target.value===""?null:e.target.value; reRender(); };
+ovWrap.appendChild(ovInp);
+if(r.included && r.isOverride) ovWrap.appendChild(reEl('<span class="re-override-badge">MANUAL OVERRIDE</span>'));
+detail.appendChild(ovWrap);
+
+row.appendChild(detail);
+catList.appendChild(row);
+});
+
+// summary — kept in a sticky panel so it remains visible while categories are selected
+summaryPanel.appendChild(reEl('<div class="re-section-title">Estimate Summary</div>'));
+let summaryWrap = reEl('<div id="re_summaryWrap"></div>');
+summaryPanel.appendChild(summaryWrap);
+reRenderSummaryInto(summaryWrap);
+c.appendChild(mainGrid);
+}
+
+function reRenderSummaryOnly(){
+let wrap = document.getElementById('re_summaryWrap');
+if(wrap) reRenderSummaryInto(wrap);
+let stripBase = document.querySelector('.re-cat-top .re-cost');
+}
+
+function reRenderSummaryInto(wrap){
+wrap.innerHTML = "";
+let t = reComputeTotals();
+wrap.appendChild(reEl(`<div class="breakdown"><span>Base Repairs</span><span>${money(t.base)}</span></div>`));
+wrap.appendChild(reEl(`<div class="breakdown negative"><span>Contingency (${t.pct}%)</span><span>${money(t.contingency)}</span></div>`));
+wrap.appendChild(reEl(`<div class="breakdown total"><span>TOTAL ESTIMATED REPAIRS</span><span>${money(t.total)}</span></div>`));
+
+if(t.lines.length){
+let tbl = reEl('<table class="re-table"><thead><tr><th>Repair</th><th>Scope</th><th>Qty</th><th>Unit Cost</th><th>Est. Cost</th></tr></thead><tbody></tbody></table>');
+let tbody = tbl.querySelector('tbody');
+t.lines.forEach(l=>{
+let levelLabel = l.cat.levels.find(x=>x.key===l.level)?.label || l.level;
+// Use insertAdjacentHTML directly on the tbody instead of reEl(): setting innerHTML
+// on a detached <div> silently drops <tr> markup (browsers require table context),
+// which made reEl(...) return null and crashed appendChild — wiping out the whole
+// Repair Estimator panel the moment a category was checked.
+tbody.insertAdjacentHTML('beforeend', `<tr>
+<td>${l.cat.label}${l.isOverride?'<br><span class="re-override-badge">MANUAL OVERRIDE</span>':''}</td>
+<td>${l.cat.id==='other' && l.customLabel ? l.customLabel : levelLabel}</td>
+<td class="re-num">${l.qty}</td>
+<td class="re-num">${l.unitCost!==null && l.unitCost!==undefined ? money(l.unitCost) : '—'}</td>
+<td class="re-num">${money(l.cost)}</td>
+</tr>`);
+});
+wrap.appendChild(tbl);
+}
+
+wrap.appendChild(reEl('<div class="re-warning">This is an investor-level preliminary repair estimate. Actual costs may vary based on property condition, contractor pricing, material selection, permits, local labor rates, and unforeseen issues. Obtain contractor estimates before finalizing an offer.</div>'));
+
+let btnRow = reEl('<div class="btn-group"></div>');
+let saveBtn = reEl('<button class="secondary">Save Estimate</button>');
+saveBtn.onclick = reSaveEstimate;
+let sendBtn = reEl('<button class="primary">Send to Deal Analyzer</button>');
+sendBtn.onclick = reSendToDealAnalyzer;
+let printBtn = reEl('<button class="secondary">Print / Export</button>');
+printBtn.onclick = ()=>window.print();
+btnRow.appendChild(saveBtn); btnRow.appendChild(sendBtn); btnRow.appendChild(printBtn);
+wrap.appendChild(btnRow);
+
+let newBtn = reEl('<button class="secondary" style="width:100%;">+ New Repair Estimate</button>');
+newBtn.onclick = ()=>{ reEstimate = reBlankEstimate(); reRender(); };
+let newRow = reEl('<div class="btn-group"></div>'); newRow.appendChild(newBtn);
+wrap.appendChild(newRow);
+}
+
+/* ---- SAVE / SEND ---- */
+function reSaveEstimate(){
+if(!reEstimate.property.state){ reToast("Select a state first"); return; }
+let t = reComputeTotals();
+if(!reEstimate.id) reEstimate.id = 're_'+Date.now();
+reEstimate.createdAt = reEstimate.createdAt || new Date().toISOString();
+reEstimate.lastTotals = t;
+let idx = reSavedEstimates.findIndex(e=>e.id===reEstimate.id);
+let snap = JSON.parse(JSON.stringify(reEstimate));
+if(idx>=0) reSavedEstimates[idx]=snap; else reSavedEstimates.push(snap);
+rePersistEstimates();
+reToast("Estimate saved");
+}
+
+function reSendToDealAnalyzer(){
+if(!reEstimate.property.state){ reToast("Select a state first"); return; }
+let t = reComputeTotals();
+reEstimate.sentToDeal = true;
+reSaveEstimate();
+
+let p = reEstimate.property;
+let addrField = document.getElementById('address');
+let sqftField = document.getElementById('sqft');
+let repairField = document.getElementById('repair');
+
+if(addrField){
+let fullAddr = [p.address, p.city, p.state, p.zip].filter(Boolean).join(', ');
+if(fullAddr) addrField.value = fullAddr;
+}
+if(sqftField && p.sqft) sqftField.value = p.sqft;
+// Keep the Deal Analyzer property profile synced back into Repair Estimator
+if(p.address || p.city || p.state || p.zip || p.sqft){
+  reEstimate.property.address = addrField ? addrField.value : (p.address || '');
+  reEstimate.property.sqft = sqftField ? sqftField.value : (p.sqft || '');
+}
+if(repairField){ repairField.value = money(t.total); }
+
+calculate();
+
+switchView('wholesale');
+reToast("Sent to Deal Analyzer — Total Repairs "+money(t.total));
+}
+
+/* ---- SAVED VIEW ---- */
+function reRenderSaved(c){
+if(!reSavedEstimates.length){
+let empty = reEl('<div class="re-empty">No saved estimates yet.<br>Build one in the New Estimate tab.</div>');
+let btn = reEl('<button class="primary" style="max-width:220px;margin:14px auto 0;display:block;">+ New Repair Estimate</button>');
+btn.onclick = ()=>reSwitchSub('new');
+c.appendChild(empty); c.appendChild(btn);
+return;
+}
+reSavedEstimates.slice().reverse().forEach(est=>{
+let t = est.lastTotals || {total:0};
+let addr = est.property.address || '(no address)';
+let card = reEl(`<div class="re-saved-card">
+<div class="re-saved-top"><div class="re-saved-addr">${addr}</div><div class="re-saved-total">${money(t.total)}</div></div>
+<div class="re-saved-meta">${est.property.city||''}${est.property.city?', ':''}${est.property.state||''} · ${est.property.sqft||'—'} sqft · ${new Date(est.createdAt).toLocaleDateString()}${est.sentToDeal?' · Sent to Deal Analyzer':''}</div>
+</div>`);
+let actions = reEl('<div class="btn-group" style="margin-top:10px;margin-bottom:0;"></div>');
+let editBtn = reEl('<button class="secondary">Edit</button>');
+editBtn.onclick = ()=>{ reEstimate = JSON.parse(JSON.stringify(est)); reSwitchSub('new'); };
+let delBtn = reEl('<button class="secondary">Delete</button>');
+delBtn.onclick = ()=>{ reSavedEstimates = reSavedEstimates.filter(e=>e.id!==est.id); rePersistEstimates(); reRender(); };
+actions.appendChild(editBtn); actions.appendChild(delBtn);
+card.appendChild(actions);
+c.appendChild(card);
+});
+}
+
+/* ---- ADMIN VIEW ---- */
+function reRenderAdmin(c){
+c.appendChild(reEl('<div class="re-admin-note">Starter pricing is a regional estimate derived from national typical costs × a state cost multiplier. Edit any record below to reflect real local contractor pricing — your edits are saved in this browser and always take priority over starter defaults.</div>'));
+
+c.appendChild(reEl('<div class="re-section-title">Edit Pricing</div>'));
+let selRow = reEl('<div class="re-grid3"></div>');
+let stWrap = reEl('<div><label>State</label></div>');
+let stSel = reEl('<select></select>');
+RE_STATES.forEach(s=>stSel.appendChild(reEl(`<option ${s===reAdminState?'selected':''}>${s}</option>`)));
+stSel.onchange = e=>{ reAdminState=e.target.value; reRender(); };
+stWrap.appendChild(stSel);
+let catWrap = reEl('<div><label>Repair Category</label></div>');
+let catSel = reEl('<select></select>');
+reAllCategories().forEach(cc=>catSel.appendChild(reEl(`<option value="${cc.id}" ${cc.id===reAdminCat?'selected':''}>${cc.label}</option>`)));
+catSel.onchange = e=>{ reAdminCat=e.target.value; reRender(); };
+catWrap.appendChild(catSel);
+selRow.appendChild(stWrap); selRow.appendChild(catWrap);
+c.appendChild(selRow);
+
+let cat = reGetCategory(reAdminCat);
+cat.levels.filter(l=>l.key!=='none').forEach(level=>{
+let p = reGetPrice(reAdminState, cat.id, level.key);
+let key = reOverrideKey(reAdminState,cat.id,level.key);
+let box = reEl('<div class="re-cat-row on" style="margin-top:12px;"></div>');
+box.appendChild(reEl(`<div class="re-cat-top" style="margin-bottom:2px;"><div class="re-name">${level.label}</div>${!p||p.active===false?'<span style="opacity:.6;font-style:italic;font-size:12px;">inactive</span>':''}</div>`));
+let grid = reEl('<div class="re-price-grid"></div>');
+let lowWrap = reEl('<div><label>Low ($)</label></div>'); let lowInp = reEl(`<input type="number" value="${p?p.low.toFixed(2):''}">`); lowWrap.appendChild(lowInp);
+let typWrap = reEl('<div><label>Typical ($)</label></div>'); let typInp = reEl(`<input type="number" value="${p?p.typical.toFixed(2):''}">`); typWrap.appendChild(typInp);
+let highWrap = reEl('<div><label>High ($)</label></div>'); let highInp = reEl(`<input type="number" value="${p?p.high.toFixed(2):''}">`); highWrap.appendChild(highInp);
+grid.appendChild(lowWrap); grid.appendChild(typWrap); grid.appendChild(highWrap);
+box.appendChild(grid);
+box.appendChild(reEl(`<div class="re-unit-note">Unit: ${cat.unitLabel}${p&&p.lastUpdated?(' · Updated '+new Date(p.lastUpdated).toLocaleDateString()):''}${p&&p.source?(' · '+p.source):''}</div>`));
+let actRow = reEl('<div class="btn-group"></div>');
+let saveBtn = reEl('<button class="primary">Save</button>');
+saveBtn.onclick = ()=>{
+let low = parseFloat(lowInp.value)||0, typical=parseFloat(typInp.value)||0, high=parseFloat(highInp.value)||0;
+reOverrides[key] = {low,typical,high,unit:cat.unit,lastUpdated:new Date().toISOString(),source:"Admin edit",active:true};
+rePersistOverrides(); reToast("Pricing updated"); reRender();
+};
+let toggleBtn = reEl(`<button class="secondary">${p&&p.active===false?'Reactivate':'Deactivate'}</button>`);
+toggleBtn.onclick = ()=>{
+let existing = reOverrides[key] || Object.assign({unit:cat.unit,lastUpdated:new Date().toISOString(),source:"Admin edit"}, reComputeDefaultPrice(reAdminState,cat,level));
+existing.active = !(existing.active!==false);
+reOverrides[key]=existing; rePersistOverrides(); reRender();
+};
+actRow.appendChild(saveBtn); actRow.appendChild(toggleBtn);
+box.appendChild(actRow);
+c.appendChild(box);
+});
+
+c.appendChild(reEl('<div class="re-section-title">Add a New Repair Category</div>'));
+let ncWrap = reEl('<div></div>');
+ncWrap.innerHTML = `<label>Category Name</label><input type="text" id="re_nc_name" placeholder="e.g. Fencing">
+<label>Unit</label><input type="text" id="re_nc_unit" placeholder="e.g. linear ft">
+<label>Typical Cost Per Unit ($, national baseline)</label><input type="number" id="re_nc_cost">`;
+c.appendChild(ncWrap);
+let ncBtnRow = reEl('<div class="btn-group"></div>');
+let ncBtn = reEl('<button class="primary">Add Category</button>');
+ncBtn.onclick = ()=>{
+let name = document.getElementById('re_nc_name').value.trim();
+let unit = document.getElementById('re_nc_unit').value.trim() || 'flat';
+let cost = parseFloat(document.getElementById('re_nc_cost').value)||0;
+if(!name){ reToast("Enter a category name"); return; }
+let id = 'custom_'+name.toLowerCase().replace(/[^a-z0-9]+/g,'_');
+reCustomCategories.push({id,label:name,unit,unitLabel:unit,auto:()=>1,levels:[reNoneLevel(),{key:'standard',label:'Standard',cost}]});
+rePersistCustomCategories(); reToast("Category added"); reRender();
+};
+ncBtnRow.appendChild(ncBtn);
+c.appendChild(ncBtnRow);
+
+c.appendChild(reEl('<div class="re-section-title">Bulk Import Pricing (CSV)</div>'));
+c.appendChild(reEl('<div class="re-unit-note">Format: state,category_id,level_key,low,typical,high — one row per line. Category/level keys must match the ones shown in Edit Pricing above.</div>'));
+let ta = reEl('<textarea class="re-csv" id="re_csv" rows="4" placeholder="Texas,roof,full_replacement,4500,7000,9500"></textarea>');
+c.appendChild(ta);
+let impRow = reEl('<div class="btn-group"></div>');
+let impBtn = reEl('<button class="secondary">Import</button>');
+impBtn.onclick = ()=>{
+let text = ta.value.trim();
+if(!text) return;
+let count=0;
+text.split('\n').forEach(line=>{
+let parts = line.split(',').map(s=>s.trim());
+if(parts.length<6) return;
+let [state,catId,levelKey,low,typical,high] = parts;
+if(!RE_STATES.includes(state) || !reGetCategory(catId)) return;
+reOverrides[reOverrideKey(state,catId,levelKey)] = {low:parseFloat(low)||0, typical:parseFloat(typical)||0, high:parseFloat(high)||0,
+unit:reGetCategory(catId).unit, lastUpdated:new Date().toISOString(), source:"Bulk import", active:true};
+count++;
+});
+rePersistOverrides();
+reToast(count+" record(s) imported");
+ta.value='';
+reRender();
+};
+impRow.appendChild(impBtn);
+c.appendChild(impRow);
+}
+</script>
+
+</body>
+</html>
