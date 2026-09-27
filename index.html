@@ -359,13 +359,19 @@ label{color:#b9c8cf;font-weight:600;font-size:12px;text-transform:uppercase;lett
 /* ============ ARV FINDER MODAL ============ */
 .arv-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:500;align-items:center;justify-content:center;padding:20px;}
 .arv-modal-overlay.show{display:flex;}
-.arv-modal-card{background:linear-gradient(180deg,#141e24,#10171c);border:1px solid var(--line,#263640);border-radius:18px;padding:26px;max-width:440px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.5);}
-.arv-modal-card h2{color:#fff;text-align:left;}
-.arv-address-note{font-size:12px;color:var(--muted,#91a2ad);margin:0 0 16px;}
-.arv-estimated-box{background:linear-gradient(135deg,#063d43,#08666d);border:1px solid #16737a;border-radius:12px;padding:16px;text-align:center;margin:6px 0 8px;}
-.arv-estimated-box .arv-label{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#b9e9ec;opacity:.85;}
-.arv-estimated-box .arv-value{font-size:28px;font-weight:900;color:#fff;margin-top:4px;}
-.arv-sync-note{font-size:11px;color:var(--muted,#91a2ad);text-align:center;margin-bottom:6px;}
+.arv-modal-card{background:linear-gradient(180deg,#141e24,#10171c);border:1px solid var(--line,#263640);border-radius:18px;padding:20px;max-width:440px;width:100%;max-height:88vh;box-shadow:0 20px 60px rgba(0,0,0,.5);display:flex;flex-direction:column;overflow:hidden;}
+.arv-modal-scroll{overflow-y:auto;padding-right:2px;}
+.arv-modal-card h2{color:#fff;text-align:left;font-size:18px;margin:0 0 2px;}
+.arv-address-note{font-size:11px;color:var(--muted,#91a2ad);margin:0 0 10px;}
+.arv-modal-card label{font-size:11px;margin-bottom:3px;}
+.arv-modal-card input{padding:9px 10px;font-size:14px;margin-bottom:10px;}
+.arv-pull-btn{width:100%;margin-bottom:8px;padding:10px;font-size:13px;}
+.arv-pull-hint{font-size:10.5px;line-height:1.35;margin:0 0 12px;}
+.arv-estimated-box{background:linear-gradient(135deg,#063d43,#08666d);border:1px solid #16737a;border-radius:12px;padding:10px;text-align:center;margin:4px 0 6px;}
+.arv-estimated-box .arv-label{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#b9e9ec;opacity:.85;}
+.arv-estimated-box .arv-value{font-size:22px;font-weight:900;color:#fff;margin-top:2px;}
+.arv-sync-note{font-size:10.5px;color:var(--muted,#91a2ad);text-align:center;margin-bottom:4px;}
+.arv-modal-card .btn-group{margin:10px 0 0;flex:none;}
 </style></head>
 
 <body>
@@ -383,26 +389,41 @@ label{color:#b9c8cf;font-weight:600;font-size:12px;text-transform:uppercase;lett
 
 <div class="arv-modal-overlay" id="arvModalOverlay" onclick="if(event.target===this) closeARV()">
 <div class="arv-modal-card">
-<h2 style="margin-bottom:2px;">ARV Finder</h2>
+<div class="arv-modal-scroll">
+<h2>ARV Finder</h2>
 <div class="arv-address-note" id="arvAddressNote">No property address set</div>
 
-<label>Zillow Estimate (Zestimate)</label>
-<input id="arvZillow" placeholder="$0" oninput="formatCurrencyARV(this)">
+<button class="primary arv-pull-btn" onclick="arvOpenAllSources()">🔍 Pull Estimates (opens Zillow, Redfin &amp; Realtor.com)</button>
+<div class="arv-sync-note arv-pull-hint">Opens all 3 sites in new tabs — copy each value into its field below. (Zillow/Redfin occasionally land on a Google search instead.)</div>
 
-<label>Redfin Estimate</label>
-<input id="arvRedfin" placeholder="$0" oninput="formatCurrencyARV(this)">
+<div style="display:flex;gap:6px;align-items:flex-end;">
+<div style="flex:1;"><label>Zillow Estimate (Zestimate)<span id="arvZillowFlag"></span></label>
+<input id="arvZillow" placeholder="$0" oninput="formatCurrencyARV(this)"></div>
+<button class="secondary" style="flex:none;width:auto;padding:9px 12px;margin-bottom:10px;" onclick="arvOpenSource('zillow')" title="Open Zillow for this address">↗</button>
+</div>
 
-<label>Realtor.com Estimate</label>
-<input id="arvRealtor" placeholder="$0" oninput="formatCurrencyARV(this)">
+<div style="display:flex;gap:6px;align-items:flex-end;">
+<div style="flex:1;"><label>Redfin Estimate<span id="arvRedfinFlag"></span></label>
+<input id="arvRedfin" placeholder="$0" oninput="formatCurrencyARV(this)"></div>
+<button class="secondary" style="flex:none;width:auto;padding:9px 12px;margin-bottom:10px;" onclick="arvOpenSource('redfin')" title="Open Redfin for this address">↗</button>
+</div>
+
+<div style="display:flex;gap:6px;align-items:flex-end;">
+<div style="flex:1;"><label>Realtor.com Estimate<span id="arvRealtorFlag"></span></label>
+<input id="arvRealtor" placeholder="$0" oninput="formatCurrencyARV(this)"></div>
+<button class="secondary" style="flex:none;width:auto;padding:9px 12px;margin-bottom:10px;" onclick="arvOpenSource('realtor')" title="Open Realtor.com for this address">↗</button>
+</div>
 
 <label>Other Estimate</label>
 <input id="arvOther" placeholder="$0" oninput="formatCurrencyARV(this)">
 
 <div class="arv-estimated-box">
-<div class="arv-label">Estimated ARV</div>
+<div class="arv-label">Average Estimated Value</div>
 <div class="arv-value" id="arvEstimatedValue">$0</div>
 </div>
 <div class="arv-sync-note" id="arvSyncNote">Enter at least one estimate and click Calculate ARV.</div>
+<div class="arv-sync-note" id="arvMissingNote" style="color:#FFD2A0;"></div>
+</div>
 
 <div class="btn-group">
 <button class="secondary" onclick="closeARV()">Close</button>
@@ -860,6 +881,8 @@ document.getElementById("arvRealtor").value = saved && saved.realtor ? money(sav
 document.getElementById("arvOther").value = saved && saved.other ? money(saved.other) : '';
 document.getElementById("arvEstimatedValue").textContent = saved && saved.estimatedARV ? money(saved.estimatedARV) : '$0';
 document.getElementById("arvSyncNote").textContent = "Enter at least one estimate and click Calculate ARV.";
+document.getElementById("arvMissingNote").textContent = "";
+['arvZillowFlag','arvRedfinFlag','arvRealtorFlag'].forEach(id=>document.getElementById(id).textContent='');
 
 document.getElementById("arvModalOverlay").classList.add('show');
 }
@@ -873,21 +896,70 @@ let v=input.value.replace(/[^0-9]/g,'')
 if(v) input.value='$'+Number(v).toLocaleString()
 }
 
+/* ---- SOURCE SEARCH LINKS ----
+   Browsers block a page from silently reading Zillow/Redfin/Realtor.com's
+   pages (no public API for their AVM values, and their terms don't allow
+   scraping), so this can't fill the fields with zero clicks. Instead, one
+   click opens all three sites pre-searched for the exact address so you
+   only have to glance at each tab and paste the number in. Google's
+   site-restricted search is used because it reliably lands on the exact
+   listing/estimate page across all three sites, unlike guessing each
+   site's internal URL format (which changes and breaks silently). */
+const ARV_SOURCES = {
+zillow:  {label:"Zillow",      site:"zillow.com"},
+redfin:  {label:"Redfin",      site:"redfin.com"},
+realtor: {label:"Realtor.com", site:"realtor.com"}
+}
+
+function arvSearchUrl(sourceKey, address){
+let src = ARV_SOURCES[sourceKey];
+return "https://www.google.com/search?q="+encodeURIComponent('site:'+src.site+' '+address);
+}
+
+function arvOpenSource(sourceKey){
+let address = document.getElementById("address").value.trim();
+if(!address){ reToast("Enter a Property Address first"); return; }
+window.open(arvSearchUrl(sourceKey, address), '_blank');
+}
+
+function arvOpenAllSources(){
+let address = document.getElementById("address").value.trim();
+if(!address){ reToast("Enter a Property Address first"); return; }
+Object.keys(ARV_SOURCES).forEach(k=> window.open(arvSearchUrl(k, address), '_blank'));
+reToast("Opened Zillow, Redfin & Realtor.com for this address");
+}
+
 function calculateARVFinder(){
 let zillow=parseCurrency(document.getElementById("arvZillow").value)
 let redfin=parseCurrency(document.getElementById("arvRedfin").value)
 let realtor=parseCurrency(document.getElementById("arvRealtor").value)
 let other=parseCurrency(document.getElementById("arvOther").value)
 
+let primary = [
+{key:'zillow', label:'Zillow', val:zillow, flagEl:'arvZillowFlag'},
+{key:'redfin', label:'Redfin', val:redfin, flagEl:'arvRedfinFlag'},
+{key:'realtor', label:'Realtor.com', val:realtor, flagEl:'arvRealtorFlag'}
+]
+primary.forEach(s=>{
+document.getElementById(s.flagEl).textContent = s.val>0 ? '' : ' (unavailable)';
+document.getElementById(s.flagEl).style.cssText = 'font-size:11px;color:#FFB74D;font-weight:normal;';
+})
+
 let entered = [zillow,redfin,realtor,other].filter(v=>v>0)
 if(!entered.length){
 document.getElementById("arvSyncNote").textContent = "Enter at least one estimate to calculate the ARV."
+document.getElementById("arvMissingNote").textContent = ""
 return
 }
 
 let estimatedARV = entered.reduce((a,b)=>a+b,0) / entered.length
 
 document.getElementById("arvEstimatedValue").textContent = money(estimatedARV)
+
+let missing = primary.filter(s=>!(s.val>0)).map(s=>s.label);
+document.getElementById("arvMissingNote").textContent = missing.length
+? "Unavailable: "+missing.join(", ")+" — average uses the "+entered.length+" source(s) entered."
+: "";
 
 let key = arvAddressKey();
 arvStore[key] = {zillow,redfin,realtor,other,estimatedARV,updatedAt:new Date().toISOString()}
@@ -898,7 +970,7 @@ document.getElementById("arv").value = money(estimatedARV)
 calculate()
 
 document.getElementById("arvSyncNote").textContent = "Synced to Wholesale Flip ARV field."
-reToast("Estimated ARV "+money(estimatedARV)+" applied to Wholesale Flip")
+reToast("Average Estimated Value "+money(estimatedARV)+" applied to Wholesale Flip")
 }
 
 function openComps(){
